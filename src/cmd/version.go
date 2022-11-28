@@ -10,24 +10,20 @@ var (
 	verbose    bool
 	versionCmd = &cobra.Command{
 		Use:   "version",
-		Short: "Print the version number of Task",
-		Long:  `All software has versions. This is Task's`,
+		Short: "Print the version of Task.",
+		Long:  `All software has versions. This is Task's.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			Version()
+			if verbose {
+				fmt.Println("CLI Task Manager Version 0.0.1")
+
+				return
+			}
+			fmt.Println("Task - v0.0.1")
 		},
 	}
 )
 
-func SetUp() {
+func init() {
 	versionCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Print verbose version")
 	rootCmd.AddCommand(versionCmd)
-}
-
-func Version() {
-	if verbose {
-		fmt.Println("CLI Task Manager Version 0.0.1")
-
-		return
-	}
-	fmt.Println("Task - v0.0.1")
 }
