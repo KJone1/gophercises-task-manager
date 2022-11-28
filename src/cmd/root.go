@@ -7,12 +7,21 @@ import (
 )
 
 var (
+	version bool
 	rootCmd = &cobra.Command{
-		Use:   "Task Manager",
+		Use:   "task",
 		Short: "CLI Task Manager",
 		Long:  "CLI Task Manager",
-	}
+		Run: func(cmd *cobra.Command, args []string) {
+			if version {
+				versionCmd.Run(cmd, nil)
+			}
+		}}
 )
+
+func init() {
+	rootCmd.Flags().BoolVarP(&version, "version", "v", false, "Print the version of Task.")
+}
 
 // Execute executes the root command.
 func Execute() error {
