@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	if err := cmd.Execute(); err != nil {
