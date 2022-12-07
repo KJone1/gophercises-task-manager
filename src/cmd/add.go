@@ -32,10 +32,12 @@ func Save(db *bolt.DB, key string, value Task) error {
 		if err != nil {
 			return fmt.Errorf("failed to create bucket: %w", err)
 		}
+
 		encoded, err := json.Marshal(value)
 		if err != nil {
 			return fmt.Errorf("failed to parse task: %w", err)
 		}
+
 		err = bucket.Put([]byte(key), (encoded))
 		if err != nil {
 			return fmt.Errorf("failed to Write task to DB: %w", err)
@@ -55,7 +57,10 @@ var (
 			newtask.Task = strings.Join(args, " ")
 			newtask.Date.Year, newtask.Date.Month, newtask.Date.Day = time.Now().Date()
 			newtask.isDone = false
-			newtask.Id, _ = nanoid.Generate("12345678", 4)
+
+			used_alphabet := "12345678"
+			newtask.Id, _ = nanoid.Generate(used_alphabet, 4)
+
 			if len(args) == 0 {
 				log.Error().Msg("No arguments provided for \"Add\" command")
 				os.Exit(1)
