@@ -15,7 +15,7 @@ import (
 
 type Task struct {
 	Id       string
-	isDone   bool
+	IsDone   bool
 	Task     string
 	Subtasks []string
 	Tag      string
@@ -56,7 +56,7 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			newtask.Task = strings.Join(args, " ")
 			newtask.Date.Year, newtask.Date.Month, newtask.Date.Day = time.Now().Date()
-			newtask.isDone = false
+			newtask.IsDone = false
 
 			used_alphabet := "12345678"
 			newtask.Id, _ = nanoid.Generate(used_alphabet, 4)
