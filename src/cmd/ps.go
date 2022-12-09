@@ -25,7 +25,8 @@ var (
 			// It will be created if it doesn't exist.
 			db, err := bolt.Open("tasks.db", 0600, &bolt.Options{Timeout: 10 * time.Second})
 			if err != nil {
-				log.Fatal().Msgf("Failed to open DB: %w", err)
+				log.Error().Msgf("Failed to open DB: %w", err)
+				os.Exit(1)
 			}
 			defer db.Close()
 
