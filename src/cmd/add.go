@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 	"time"
@@ -14,7 +15,7 @@ import (
 )
 
 type Task struct {
-	Id       string
+	ID       string
 	IsDone   bool
 	Task     string
 	Subtasks []string
@@ -58,8 +59,14 @@ var (
 			newtask.Date.Year, newtask.Date.Month, newtask.Date.Day = time.Now().Date()
 			newtask.IsDone = false
 
-			used_alphabet := "12345678"
-			newtask.Id, _ = nanoid.Generate(used_alphabet, 4)
+			useAlphabet := "12345678"
+			idLength := 4
+			var err error
+			newtask.ID, err = nanoid.Generate(useAlphabet, idLength)
+			if err != nil {
+				log.Error().Msgf("Failed to add task: %w", err)
+				os.Exit(1)
+			}
 
 			if len(args) == 0 {
 				log.Error().Msg("No arguments provided for \"Add\" command")
@@ -67,15 +74,19 @@ var (
 			}
 
 			// It will be created if it doesn't exist.
-			db, err := bolt.Open("tasks.db", 0600, &bolt.Options{Timeout: 10 * time.Second})
+			var filePermission fs.FileMode = 0600
+			timeout := 10 * time.Second
+			db, err := bolt.Open("tasks.db", filePermission, &bolt.Options{Timeout: timeout})
 			if err != nil {
 				log.Error().Msgf("Failed to open DB: %w", err)
+				os.Exit(1)
 			}
 			defer db.Close()
 
-			err = Save(db, newtask.Id, newtask)
+			err = Save(db, newtask.ID, newtask)
 			if err != nil {
-				log.Error().Msgf("Failed to Save task: %w", err)
+				log.Error().Msgf("Failed to save task: %w", err)
+				os.Exit(1)
 			}
 
 			switch len(newtask.Subtasks) {

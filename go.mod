@@ -7,12 +7,12 @@ require (
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/cobra v1.6.1
 	go.etcd.io/bbolt v1.3.6
+	github.com/matoous/go-nanoid/v2 v2.0.0
 
 )
 
 require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
-	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
