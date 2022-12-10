@@ -28,7 +28,7 @@ var (
 			t.SetOutputMirror(os.Stdout)
 
 			if showAll {
-				t.AppendHeader(table.Row{"Task", "Sub Tasks", "Tag", "Date Added", "Status"})
+				t.AppendHeader(table.Row{"ID", "Task", "Sub Tasks", "Tag", "Date Added", "Status"})
 				t.SetColumnConfigs([]table.ColumnConfig{
 					{
 						Name:  "Sub Tasks",
@@ -79,7 +79,7 @@ var (
 						} else {
 							status = "In Progress"
 						}
-						row := (table.Row{task.Task, subtasks, task.Tag, date, status})
+						row := (table.Row{task.ID, task.Task, subtasks, task.Tag, date, status})
 
 						t.AppendRow(row)
 						t.AppendSeparator()
