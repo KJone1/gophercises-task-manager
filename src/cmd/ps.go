@@ -84,11 +84,11 @@ var (
 						t.AppendRow(row)
 						t.AppendSeparator()
 
-						return nil
+						return err
 					}
 
 					if task.IsDone {
-						return nil
+						return err
 					}
 
 					date := fmt.Sprintf("%d/%d/%d", task.Date.Day, task.Date.Month, task.Date.Year)
@@ -103,16 +103,16 @@ var (
 					t.AppendRow(row)
 					t.AppendSeparator()
 
-					return nil
+					return err
 				})
 
-				t.Render()
-
-				return nil
+				return err
 			})
 			if err != nil {
 				log.Error().Msgf("Failed to list tasks: %w", err)
 			}
+
+			t.Render()
 		},
 	}
 )
