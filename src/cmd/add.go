@@ -55,6 +55,12 @@ var (
 		Short: "Add new task.",
 		Long:  "Add new task to task manager.",
 		Run: func(cmd *cobra.Command, args []string) {
+
+			if len(args) == 0 {
+				log.Error().Msg("No arguments provided for \"add\" command")
+				os.Exit(1)
+			}
+
 			newtask.Task = strings.Join(args, " ")
 			newtask.Date.Year, newtask.Date.Month, newtask.Date.Day = time.Now().Date()
 			newtask.IsDone = false
@@ -65,11 +71,6 @@ var (
 			newtask.ID, err = nanoid.Generate(useAlphabet, idLength)
 			if err != nil {
 				log.Error().Msgf("Failed to add task: %w", err)
-				os.Exit(1)
-			}
-
-			if len(args) == 0 {
-				log.Error().Msg("No arguments provided for \"Add\" command")
 				os.Exit(1)
 			}
 
