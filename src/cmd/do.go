@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/fs"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -24,8 +23,6 @@ var (
 				os.Exit(1)
 			}
 
-			taskID := strings.Join(args, " ")
-
 			// It will be created if it doesn't exist.
 			var filePermission fs.FileMode = 0600
 			timeout := 10 * time.Second
@@ -43,28 +40,31 @@ var (
 					os.Exit(0)
 				}
 
-				readValue := bucket.Get([]byte(taskID))
-				task := Task{}
+				for _, taskID := range args {
 
-				if err = json.Unmarshal(readValue, &task); err != nil {
-					log.Error().Msgf("Failed to unmarshal: %w", err)
-					os.Exit(1)
+					getValue := bucket.Get([]byte(taskID))
+					task := Task{}
+
+					if err = json.Unmarshal(getValue, &task); err != nil {
+						log.Error().Msgf("Failed to unmarshal: %w", err)
+						os.Exit(1)
+					}
+
+					task.IsDone = true
+
+					encoded, err := json.Marshal(task)
+					if err != nil {
+						log.Error().Msgf("Failed to marshal: %w", err)
+						os.Exit(1)
+					}
+
+					if err = bucket.Put([]byte(taskID), encoded); err != nil {
+						log.Error().Msgf("Failed to complete task: %w", err)
+						os.Exit(1)
+					}
+
+					log.Info().Msgf("%s is done", task.Task)
 				}
-
-				task.IsDone = true
-
-				encoded, err := json.Marshal(task)
-				if err != nil {
-					log.Error().Msgf("Failed to marshal: %w", err)
-					os.Exit(1)
-				}
-
-				if err = bucket.Put([]byte(taskID), encoded); err != nil {
-					log.Error().Msgf("Failed to complete task: %w", err)
-					os.Exit(1)
-				}
-
-				log.Info().Msgf("%s is done", task.Task)
 
 				return err
 			})

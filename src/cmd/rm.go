@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/fs"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -24,8 +23,6 @@ var (
 				os.Exit(1)
 			}
 
-			taskID := strings.Join(args, " ")
-
 			// It will be created if it doesn't exist.
 			var filePermission fs.FileMode = 0600
 			timeout := 10 * time.Second
@@ -43,20 +40,23 @@ var (
 					os.Exit(0)
 				}
 
-				readValue := bucket.Get([]byte(taskID))
-				task := Task{}
+				for _, taskID := range args {
 
-				if err = json.Unmarshal(readValue, &task); err != nil {
-					log.Error().Msgf("Failed to unmarshal: %w", err)
-					os.Exit(1)
+					getValue := bucket.Get([]byte(taskID))
+					task := Task{}
+
+					if err = json.Unmarshal(getValue, &task); err != nil {
+						log.Error().Msgf("Failed to unmarshal: %w", err)
+						os.Exit(1)
+					}
+
+					if err = bucket.Delete([]byte(taskID)); err != nil {
+						log.Error().Msgf("Failed to delete task: %w", err)
+						os.Exit(1)
+					}
+
+					log.Info().Msgf("Removed %s", task.Task)
 				}
-
-				if err = bucket.Delete([]byte(taskID)); err != nil {
-					log.Error().Msgf("Failed to delete task: %w", err)
-					os.Exit(1)
-				}
-
-				log.Info().Msgf("Removed %s", task.Task)
 
 				return err
 			})
